@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: postgres-shopper
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shopper
+    volumes:
+      - ./pgdata:/var/lib/postgres/data
+    ports:
+      - "5433:5432"
+  api:
+    image: node:latest
+    container_name: api
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - 3001:3001
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    command: bash -c "npm install && npm start"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
